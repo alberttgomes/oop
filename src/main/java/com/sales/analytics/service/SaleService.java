@@ -3,45 +3,26 @@ package com.sales.analytics.service;
 import com.sales.analytics.model.Sale;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Albert Gomes Cabral
  */
 public class SaleService {
 
-    public static void scannerSale(List<Sale> sales) {
-        System.out.println("\nTop five sales of 2016 with the highest average price");
+    public static void totalSellBySeller(List<Sale> sales) throws RuntimeException {
+        System.out.println("\nTotal selling by seller");
 
-        _olderSalesMostExpensive(sales).forEach(System.out::println);
+        Map<String, Double> totalSellBySellerMap = sales.stream()
+            .collect(Collectors.groupingBy(
+                Sale::getSeller,
+                Collectors.summingDouble(Sale::getTotal)
+            ));
 
-        System.out.printf(
-            "\nTotal value sell by logan seller on months 1 and 7 %.2f \n",
-            _totalLoganSeller(sales));
+        totalSellBySellerMap.forEach(
+            (seller, total) ->
+                System.out.printf("Seller: %s Total: %.2f\n", seller, total));
     }
-
-    private static List<Sale> _olderSalesMostExpensive(List<Sale> sales) {
-        return sales.stream()
-            .filter(sale -> sale.getYear() == 2016)
-            .sorted((s1, s2) -> Double.compare(s2.averagePrice(), s1.averagePrice()))
-            .limit(_LIMIT)
-            .toList();
-    }
-
-    private static Double _totalLoganSeller(List<Sale> sales) {
-        List<Sale> filtered =  sales.stream()
-            .filter(sale -> sale.getSeller().equals("Logan"))
-            .filter(sale -> sale.getMonth() == 1 || sale.getMonth() == 7)
-            .toList();
-
-        Double total = 0.0;
-
-        for (Sale sale : filtered) {
-            total += sale.getTotal();
-        }
-
-        return total;
-    }
-
-    private static final int _LIMIT = 5;
 
 }

@@ -23,7 +23,7 @@ public class SalesAnalyticsMain {
 
         saleBuilder.build(path);
 
-        SaleService.scannerSale(saleBuilder.SALES);
+        SaleService.totalSellBySeller(saleBuilder.SALES);
     }
 
 }
